@@ -2245,6 +2245,667 @@ function Stage8Interview({ name, conflict, persona, onComplete, onBack }) {
   );
 }
 
+
+function Stage9Report({ name, conflict, persona, transcript, onComplete, onBack }) {
+  const [report, setReport] = useState({
+    article1: "",
+    article2: "",
+    article3: "",
+  });
+
+  // 글자수 계산
+  const counts = {
+    a1: report.article1.length,
+    a2: report.article2.length,
+    a3: report.article3.length,
+  };
+
+  // 모든 항목 최소 50자 이상이어야 제출 가능
+  const minLength = 50;
+  const allFilled = counts.a1 >= minLength && counts.a2 >= minLength && counts.a3 >= minLength;
+
+  const today = new Date();
+  const dateStr = `${today.getFullYear()}.${String(today.getMonth()+1).padStart(2,"0")}.${String(today.getDate()).padStart(2,"0")}`;
+
+  // 학생 메시지만 카운트 (인터뷰 횟수)
+  const userMessageCount = transcript.filter(m => m.role === "user").length;
+
+  return (
+    <div style={{ minHeight: "100vh", paddingTop: 70, animation: "fadeIn 0.4s ease" }}>
+      <div style={{
+        position: "fixed",
+        top: 70,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr",
+        gap: 0,
+        background: "#0a1628",
+      }}>
+        {/* 좌측: 인터뷰 녹취록 */}
+        <aside style={{
+          padding: "24px 28px",
+          borderRight: "1px solid rgba(212,175,55,0.15)",
+          overflowY: "auto",
+          background: "rgba(244,234,213,0.015)",
+          display: "flex",
+          flexDirection: "column",
+        }}>
+          <button
+            onClick={onBack}
+            style={{
+              alignSelf: "flex-start",
+              background: "transparent",
+              color: "rgba(244,234,213,0.55)",
+              border: "none",
+              fontSize: 10,
+              letterSpacing: "0.3em",
+              fontFamily: "system-ui, sans-serif",
+              cursor: "pointer",
+              padding: "0 0 18px",
+            }}
+          >
+            ← BACK · 인터뷰로
+          </button>
+
+          <div style={{
+            fontSize: 10,
+            letterSpacing: "0.3em",
+            color: "#d4af37",
+            fontFamily: "system-ui, sans-serif",
+            fontWeight: 600,
+            marginBottom: 4,
+          }}>
+            ▌ INTERVIEW TRANSCRIPT
+          </div>
+          <div style={{
+            fontSize: 18,
+            fontFamily: '"Cormorant Garamond", "Noto Serif KR", serif',
+            color: "#f4ead5",
+            marginBottom: 6,
+          }}>
+            인터뷰 녹취록
+          </div>
+          <div style={{
+            fontSize: 11,
+            color: "rgba(244,234,213,0.5)",
+            marginBottom: 18,
+            fontStyle: "italic",
+            fontFamily: '"Cormorant Garamond", "Noto Serif KR", serif',
+          }}>
+            {persona.nameKo} · 총 {userMessageCount}회 질문
+          </div>
+
+          <div style={{
+            fontSize: 11,
+            lineHeight: 1.6,
+            color: "rgba(244,234,213,0.5)",
+            marginBottom: 16,
+            padding: "10px 12px",
+            background: "rgba(212,175,55,0.05)",
+            borderLeft: "2px solid rgba(212,175,55,0.4)",
+            fontStyle: "italic",
+            fontFamily: '"Cormorant Garamond", "Noto Serif KR", serif',
+          }}>
+            우측 보고서 작성 시 본 녹취록을 참고하십시오. 스크롤하여 전체 내용을 확인할 수 있습니다.
+          </div>
+
+          <div style={{ flex: 1 }}>
+            {transcript.map((msg, i) => {
+              const isUser = msg.role === "user";
+              return (
+                <div key={i} style={{
+                  marginBottom: 18,
+                  paddingBottom: 14,
+                  borderBottom: i < transcript.length - 1 ? "1px solid rgba(244,234,213,0.06)" : "none",
+                }}>
+                  <div style={{
+                    display: "flex",
+                    gap: 8,
+                    alignItems: "baseline",
+                    marginBottom: 6,
+                  }}>
+                    <div style={{
+                      fontSize: 10,
+                      letterSpacing: "0.15em",
+                      color: isUser ? "#d4af37" : persona.accentColor,
+                      fontFamily: "system-ui, sans-serif",
+                      fontWeight: 600,
+                    }}>
+                      {isUser ? `[조사관 ${name}]` : `[${persona.nameKo}]`}
+                    </div>
+                    <div style={{
+                      fontSize: 9,
+                      color: "rgba(244,234,213,0.35)",
+                      fontFamily: "system-ui, sans-serif",
+                    }}>
+                      {msg.time}
+                    </div>
+                  </div>
+                  <div style={{
+                    fontSize: 13,
+                    lineHeight: 1.65,
+                    color: "rgba(244,234,213,0.85)",
+                    whiteSpace: "pre-wrap",
+                  }}>
+                    {msg.content}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </aside>
+
+        {/* 우측: 보고서 작성 영역 */}
+        <main style={{
+          padding: "24px 32px 100px",
+          overflowY: "auto",
+          background: "rgba(10,22,40,0.6)",
+        }}>
+          <div style={{
+            fontSize: 10,
+            letterSpacing: "0.3em",
+            color: "#d4af37",
+            fontFamily: "system-ui, sans-serif",
+            fontWeight: 600,
+            marginBottom: 4,
+          }}>
+            ▌ FACT-FINDING REPORT
+          </div>
+          <h2 style={{
+            fontSize: 32,
+            fontWeight: 400,
+            margin: "0 0 6px",
+            letterSpacing: "-0.01em",
+            fontFamily: '"Cormorant Garamond", "Noto Serif KR", serif',
+            color: "#f4ead5",
+          }}>
+            진상조사 보고서
+          </h2>
+          <div style={{
+            fontSize: 13,
+            color: "rgba(244,234,213,0.5)",
+            fontStyle: "italic",
+            marginBottom: 24,
+            fontFamily: "system-ui, sans-serif",
+            letterSpacing: "0.05em",
+          }}>
+            Submission to UN Security Council
+          </div>
+
+          {/* 기본 정보 */}
+          <div style={{
+            padding: "16px 20px",
+            background: "rgba(244,234,213,0.03)",
+            border: "1px solid rgba(212,175,55,0.2)",
+            borderRadius: 2,
+            marginBottom: 28,
+          }}>
+            <div style={{
+              fontSize: 10,
+              letterSpacing: "0.25em",
+              color: "#d4af37",
+              fontFamily: "system-ui, sans-serif",
+              fontWeight: 600,
+              marginBottom: 12,
+            }}>
+              ▌ 기본 정보
+            </div>
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "auto 1fr",
+              gap: "8px 20px",
+              fontSize: 13,
+              color: "rgba(244,234,213,0.85)",
+            }}>
+              <div style={{ fontSize: 10, color: "rgba(212,175,55,0.7)", fontFamily: "system-ui, sans-serif", letterSpacing: "0.15em", paddingTop: 2 }}>조사관</div>
+              <div>{name}</div>
+              <div style={{ fontSize: 10, color: "rgba(212,175,55,0.7)", fontFamily: "system-ui, sans-serif", letterSpacing: "0.15em", paddingTop: 2 }}>분쟁</div>
+              <div>{conflict.nameKo}</div>
+              <div style={{ fontSize: 10, color: "rgba(212,175,55,0.7)", fontFamily: "system-ui, sans-serif", letterSpacing: "0.15em", paddingTop: 2 }}>인터뷰 대상</div>
+              <div>{persona.nameKo} · {persona.orgKo}</div>
+              <div style={{ fontSize: 10, color: "rgba(212,175,55,0.7)", fontFamily: "system-ui, sans-serif", letterSpacing: "0.15em", paddingTop: 2 }}>조사일</div>
+              <div style={{ fontFamily: "system-ui, sans-serif", fontSize: 12 }}>{dateStr}</div>
+            </div>
+          </div>
+
+          {/* 안내문 */}
+          <div style={{
+            padding: "12px 16px",
+            background: "rgba(212,175,55,0.06)",
+            borderLeft: "2px solid rgba(212,175,55,0.5)",
+            fontSize: 12,
+            lineHeight: 1.6,
+            color: "rgba(244,234,213,0.75)",
+            marginBottom: 28,
+            fontStyle: "italic",
+            fontFamily: '"Cormorant Garamond", "Noto Serif KR", serif',
+          }}>
+            인터뷰 녹취록을 참고하여 명령서 각 조항에 대한 답변을 작성하십시오.<br/>
+            권장 분량: 항목당 100~250자. 최소 50자 이상 작성해야 제출 가능합니다.
+          </div>
+
+          {/* 제1조 */}
+          <ReportArticle
+            no="제1조"
+            mandate={persona.mandate.common1}
+            value={report.article1}
+            onChange={(v) => setReport(r => ({ ...r, article1: v }))}
+            count={counts.a1}
+            minLength={minLength}
+          />
+
+          {/* 제2조 */}
+          <ReportArticle
+            no="제2조"
+            mandate={persona.mandate.common2}
+            value={report.article2}
+            onChange={(v) => setReport(r => ({ ...r, article2: v }))}
+            count={counts.a2}
+            minLength={minLength}
+          />
+
+          {/* 제3조 */}
+          <ReportArticle
+            no="제3조"
+            mandate={persona.mandate.specific}
+            value={report.article3}
+            onChange={(v) => setReport(r => ({ ...r, article3: v }))}
+            count={counts.a3}
+            minLength={minLength}
+          />
+
+          {/* 진행 상황 + 제출 버튼 */}
+          <div style={{
+            marginTop: 32,
+            padding: "20px 22px",
+            background: allFilled ? "rgba(212,175,55,0.08)" : "rgba(244,234,213,0.03)",
+            border: \`1px solid \${allFilled ? "#d4af37" : "rgba(244,234,213,0.12)"}\`,
+            borderRadius: 2,
+          }}>
+            <div style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: 14,
+            }}>
+              <div style={{
+                fontSize: 10,
+                letterSpacing: "0.25em",
+                color: allFilled ? "#d4af37" : "rgba(244,234,213,0.6)",
+                fontFamily: "system-ui, sans-serif",
+                fontWeight: 600,
+              }}>
+                COMPLETION STATUS · 작성 진행
+              </div>
+              <div style={{
+                fontSize: 14,
+                fontFamily: '"Cormorant Garamond", "Noto Serif KR", serif',
+                color: allFilled ? "#d4af37" : "rgba(244,234,213,0.85)",
+                fontStyle: allFilled ? "italic" : "normal",
+              }}>
+                {[counts.a1 >= minLength, counts.a2 >= minLength, counts.a3 >= minLength].filter(Boolean).length} / 3 {allFilled && "✓"}
+              </div>
+            </div>
+
+            <button
+              onClick={() => onComplete(report)}
+              disabled={!allFilled}
+              style={{
+                width: "100%",
+                padding: "16px 24px",
+                background: allFilled ? "#d4af37" : "rgba(212,175,55,0.15)",
+                color: allFilled ? "#0a1628" : "rgba(244,234,213,0.35)",
+                border: allFilled ? "none" : "1px solid rgba(212,175,55,0.2)",
+                fontSize: 12,
+                letterSpacing: "0.3em",
+                fontFamily: "system-ui, sans-serif",
+                fontWeight: 600,
+                cursor: allFilled ? "pointer" : "not-allowed",
+                borderRadius: 2,
+                transition: "all 0.3s",
+                boxShadow: allFilled ? "0 8px 20px rgba(212,175,55,0.25)" : "none",
+              }}
+              onMouseEnter={(e) => { if (allFilled) e.currentTarget.style.background = "#e6c558"; }}
+              onMouseLeave={(e) => { if (allFilled) e.currentTarget.style.background = "#d4af37"; }}
+            >
+              {allFilled ? "SUBMIT REPORT · 보고서 제출 →" : "모든 조항 작성 후 제출 가능"}
+            </button>
+
+            {!allFilled && (
+              <div style={{
+                marginTop: 10,
+                fontSize: 11,
+                color: "rgba(244,234,213,0.4)",
+                fontFamily: "system-ui, sans-serif",
+                textAlign: "center",
+              }}>
+                각 조항 최소 50자 이상 작성하십시오
+              </div>
+            )}
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+}
+
+function ReportArticle({ no, mandate, value, onChange, count, minLength }) {
+  const isComplete = count >= minLength;
+  return (
+    <div style={{ marginBottom: 28 }}>
+      <div style={{
+        display: "flex",
+        gap: 14,
+        alignItems: "flex-start",
+        marginBottom: 12,
+        paddingBottom: 12,
+        borderBottom: "1px solid rgba(212,175,55,0.15)",
+      }}>
+        <div style={{
+          flexShrink: 0,
+          fontSize: 13,
+          fontWeight: 500,
+          color: "#d4af37",
+          letterSpacing: "0.1em",
+          fontFamily: "system-ui, sans-serif",
+          paddingTop: 2,
+          minWidth: 50,
+        }}>
+          {no}
+        </div>
+        <div style={{
+          flex: 1,
+          fontSize: 14,
+          lineHeight: 1.65,
+          color: "rgba(244,234,213,0.9)",
+          fontStyle: "italic",
+          fontFamily: '"Cormorant Garamond", "Noto Serif KR", serif',
+        }}>
+          {mandate}
+        </div>
+      </div>
+
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="인터뷰 내용을 바탕으로 답변을 작성하십시오..."
+        rows={5}
+        style={{
+          width: "100%",
+          background: "rgba(244,234,213,0.04)",
+          border: \`1px solid \${isComplete ? "rgba(212,175,55,0.4)" : "rgba(244,234,213,0.15)"}\`,
+          borderRadius: 2,
+          padding: "14px 16px",
+          fontSize: 14,
+          lineHeight: 1.7,
+          color: "#f4ead5",
+          fontFamily: '"Cormorant Garamond", "Noto Serif KR", serif',
+          outline: "none",
+          resize: "vertical",
+          boxSizing: "border-box",
+          transition: "border-color 0.2s",
+        }}
+      />
+      <div style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginTop: 6,
+        fontSize: 11,
+        fontFamily: "system-ui, sans-serif",
+      }}>
+        <span style={{ color: "rgba(244,234,213,0.4)" }}>
+          권장: 100~250자
+        </span>
+        <span style={{
+          color: isComplete ? "#d4af37" : (count > 0 ? "rgba(244,234,213,0.55)" : "rgba(244,234,213,0.35)"),
+          fontWeight: isComplete ? 600 : 400,
+          letterSpacing: "0.05em",
+        }}>
+          {count} / {minLength}자 {isComplete && "✓"}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function Stage10ReportComplete({ name, conflict, persona, report, onBack, onRestart }) {
+  const today = new Date();
+  const dateStr = `${today.getFullYear()}년 ${today.getMonth()+1}월 ${today.getDate()}일`;
+
+  return (
+    <div style={{ minHeight: "100vh", paddingTop: 90, paddingBottom: 60, animation: "fadeIn 0.5s ease" }}>
+      <div style={{ maxWidth: 820, margin: "0 auto", padding: "0 40px" }}>
+        <div style={{ marginBottom: 24, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <button
+            onClick={onBack}
+            style={{
+              background: "transparent", color: "rgba(244,234,213,0.6)",
+              border: "none", fontSize: 11, letterSpacing: "0.3em",
+              fontFamily: "system-ui, sans-serif", cursor: "pointer",
+              padding: "4px 0",
+            }}
+          >
+            ← BACK · 보고서 수정
+          </button>
+          <div style={{
+            fontSize: 11,
+            letterSpacing: "0.3em",
+            color: "#d4af37",
+            fontFamily: "system-ui, sans-serif",
+            fontWeight: 600,
+          }}>
+            REPORT SUBMITTED · 제출 완료
+          </div>
+        </div>
+
+        {/* 보고서 본문 (인쇄 친화적 디자인) */}
+        <div style={{
+          position: "relative",
+          background: "linear-gradient(180deg, #f4ead5 0%, #ebe0c4 100%)",
+          color: "#0a1628",
+          borderRadius: 2,
+          padding: "70px 60px 50px",
+          boxShadow: "0 30px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(212,175,55,0.4)",
+          fontFamily: '"Cormorant Garamond", "Noto Serif KR", serif',
+        }}>
+          {/* 헤더 */}
+          <div style={{ textAlign: "center", marginBottom: 36 }}>
+            <svg width="48" height="48" viewBox="0 0 100 100" style={{ margin: "0 auto 16px", display: "block" }}>
+              <circle cx="50" cy="50" r="44" fill="none" stroke="#0a1628" strokeWidth="1.5"/>
+              <circle cx="50" cy="50" r="34" fill="none" stroke="#0a1628" strokeWidth="0.8"/>
+              <circle cx="50" cy="50" r="22" fill="none" stroke="#0a1628" strokeWidth="0.5"/>
+              <line x1="6" y1="50" x2="94" y2="50" stroke="#0a1628" strokeWidth="0.5"/>
+              <line x1="50" y1="6" x2="50" y2="94" stroke="#0a1628" strokeWidth="0.5"/>
+            </svg>
+            <div style={{
+              fontSize: 11,
+              letterSpacing: "0.4em",
+              color: "rgba(10,22,40,0.7)",
+              fontFamily: "system-ui, sans-serif",
+              fontWeight: 600,
+              marginBottom: 6,
+            }}>
+              UNITED NATIONS · SECURITY COUNCIL
+            </div>
+            <h2 style={{
+              fontSize: 32,
+              fontWeight: 400,
+              margin: "0 0 4px",
+              letterSpacing: "0.02em",
+            }}>
+              진상조사 보고서
+            </h2>
+            <div style={{
+              fontSize: 12,
+              fontStyle: "italic",
+              color: "rgba(10,22,40,0.6)",
+              fontFamily: "system-ui, sans-serif",
+              letterSpacing: "0.1em",
+            }}>
+              Fact-Finding Report
+            </div>
+          </div>
+
+          <div style={{ height: 1, background: "rgba(10,22,40,0.2)", margin: "28px 0" }} />
+
+          {/* 기본 정보 */}
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "auto 1fr",
+            gap: "10px 24px",
+            marginBottom: 32,
+            fontSize: 14,
+          }}>
+            <div style={{ fontSize: 10, letterSpacing: "0.25em", color: "rgba(10,22,40,0.55)", fontFamily: "system-ui, sans-serif", paddingTop: 4, fontWeight: 600 }}>조사관</div>
+            <div style={{ fontWeight: 500 }}>{name}</div>
+            <div style={{ fontSize: 10, letterSpacing: "0.25em", color: "rgba(10,22,40,0.55)", fontFamily: "system-ui, sans-serif", paddingTop: 4, fontWeight: 600 }}>분쟁</div>
+            <div>{conflict.nameKo}</div>
+            <div style={{ fontSize: 10, letterSpacing: "0.25em", color: "rgba(10,22,40,0.55)", fontFamily: "system-ui, sans-serif", paddingTop: 4, fontWeight: 600 }}>인터뷰 대상</div>
+            <div>{persona.nameKo} · <span style={{ fontSize: 12, color: "rgba(10,22,40,0.65)", fontFamily: "system-ui, sans-serif" }}>{persona.orgKo}</span></div>
+            <div style={{ fontSize: 10, letterSpacing: "0.25em", color: "rgba(10,22,40,0.55)", fontFamily: "system-ui, sans-serif", paddingTop: 4, fontWeight: 600 }}>제출일</div>
+            <div style={{ fontFamily: "system-ui, sans-serif", fontSize: 13 }}>{dateStr}</div>
+          </div>
+
+          <div style={{ height: 1, background: "rgba(10,22,40,0.2)", margin: "28px 0" }} />
+
+          {/* 보고 내용 */}
+          <ReportSection no="제1조" mandate={persona.mandate.common1} answer={report.article1} />
+          <ReportSection no="제2조" mandate={persona.mandate.common2} answer={report.article2} />
+          <ReportSection no="제3조" mandate={persona.mandate.specific} answer={report.article3} last={true} />
+
+          <div style={{ height: 1, background: "rgba(10,22,40,0.2)", margin: "28px 0" }} />
+
+          {/* 서명란 */}
+          <div style={{ textAlign: "center", paddingTop: 16 }}>
+            <div style={{
+              fontSize: 11,
+              letterSpacing: "0.3em",
+              color: "rgba(10,22,40,0.55)",
+              fontFamily: "system-ui, sans-serif",
+              fontWeight: 600,
+              marginBottom: 14,
+            }}>
+              SIGNED BY · 작성자
+            </div>
+            <div style={{
+              fontSize: 28,
+              fontStyle: "italic",
+              color: "#0a1628",
+              borderBottom: "1px solid rgba(10,22,40,0.3)",
+              display: "inline-block",
+              padding: "0 40px 6px",
+              minWidth: 200,
+            }}>
+              {name}
+            </div>
+            <div style={{
+              fontSize: 11,
+              letterSpacing: "0.2em",
+              color: "rgba(10,22,40,0.6)",
+              fontFamily: "system-ui, sans-serif",
+              marginTop: 8,
+            }}>
+              UN FACT-FINDING INVESTIGATOR · UN 진상조사관
+            </div>
+          </div>
+
+          {/* 워터마크 */}
+          <div style={{
+            position: "absolute",
+            top: 12,
+            left: 12,
+            fontSize: 8,
+            letterSpacing: "0.3em",
+            color: "rgba(10,22,40,0.25)",
+            fontFamily: "system-ui, sans-serif",
+            fontWeight: 600,
+          }}>
+            CONFIDENTIAL
+          </div>
+          <div style={{
+            position: "absolute",
+            top: 12,
+            right: 12,
+            fontSize: 8,
+            letterSpacing: "0.2em",
+            color: "rgba(10,22,40,0.25)",
+            fontFamily: "system-ui, sans-serif",
+          }}>
+            REPORT-{conflict.id.toUpperCase()}-{persona.id.toUpperCase()}
+          </div>
+        </div>
+
+        {/* 안내 + 다시 시작 */}
+        <div style={{
+          marginTop: 36,
+          padding: "20px 24px",
+          background: "rgba(212,175,55,0.06)",
+          border: "1px solid rgba(212,175,55,0.2)",
+          borderRadius: 2,
+          textAlign: "center",
+        }}>
+          <div style={{
+            fontSize: 13,
+            lineHeight: 1.7,
+            color: "rgba(244,234,213,0.85)",
+            marginBottom: 14,
+            fontFamily: '"Cormorant Garamond", "Noto Serif KR", serif',
+          }}>
+            보고서 제출이 완료되었습니다.<br/>
+            화면을 캡처하여 갤러리 워크에 공유하십시오.
+          </div>
+          <div style={{
+            fontSize: 11,
+            color: "rgba(244,234,213,0.5)",
+            fontStyle: "italic",
+            fontFamily: '"Cormorant Garamond", "Noto Serif KR", serif',
+          }}>
+            Windows: Win + Shift + S · Mac: Cmd + Shift + 4
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ReportSection({ no, mandate, answer, last }) {
+  return (
+    <div style={{ marginBottom: last ? 0 : 24 }}>
+      <div style={{
+        fontSize: 13,
+        fontWeight: 600,
+        color: "rgba(10,22,40,0.7)",
+        letterSpacing: "0.05em",
+        marginBottom: 6,
+      }}>
+        {no}
+      </div>
+      <div style={{
+        fontSize: 14,
+        fontStyle: "italic",
+        color: "rgba(10,22,40,0.65)",
+        marginBottom: 12,
+        lineHeight: 1.55,
+      }}>
+        {mandate}
+      </div>
+      <div style={{
+        fontSize: 14,
+        lineHeight: 1.85,
+        color: "#0a1628",
+        whiteSpace: "pre-wrap",
+        paddingLeft: 16,
+        borderLeft: "2px solid rgba(212,175,55,0.4)",
+      }}>
+        {answer}
+      </div>
+    </div>
+  );
+}
+
 function StagePlaceholder({ title, message, onBack }) {
   return (
     <div style={{ maxWidth: 600, margin: "0 auto", padding: "200px 40px", textAlign: "center", animation: "fadeIn 0.5s ease" }}>
@@ -2274,6 +2935,8 @@ export default function App() {
   const [name, setName] = useState("");
   const [selectedConflict, setSelectedConflict] = useState(null);
   const [selectedPersona, setSelectedPersona] = useState(null);
+  const [transcript, setTranscript] = useState([]);
+  const [report, setReport] = useState(null);
 
   // 분쟁 ID에 따라 페르소나 목록 가져오기
   const getPersonasForConflict = (conflictId) => {
@@ -2353,18 +3016,48 @@ export default function App() {
           name={name}
           conflict={selectedConflict}
           persona={selectedPersona}
-          onComplete={(transcript) => {
-            window.__transcript = transcript;
-            setStage("nextPlaceholder");
+          onComplete={(t) => {
+            setTranscript(t);
+            setStage("report");
           }}
           onBack={() => setStage("mandate")}
+        />
+      )}
+      {stage === "report" && selectedConflict && selectedPersona && (
+        <Stage9Report
+          name={name}
+          conflict={selectedConflict}
+          persona={selectedPersona}
+          transcript={transcript}
+          onComplete={(r) => {
+            setReport(r);
+            setStage("reportComplete");
+          }}
+          onBack={() => setStage("interview")}
+        />
+      )}
+      {stage === "reportComplete" && selectedConflict && selectedPersona && report && (
+        <Stage10ReportComplete
+          name={name}
+          conflict={selectedConflict}
+          persona={selectedPersona}
+          report={report}
+          onBack={() => setStage("report")}
+          onRestart={() => {
+            setStage("welcome");
+            setName("");
+            setSelectedConflict(null);
+            setSelectedPersona(null);
+            setTranscript([]);
+            setReport(null);
+          }}
         />
       )}
       {stage === "nextPlaceholder" && (
         <StagePlaceholder
           title="NEXT STEP · 다음 단계"
-          message="보고서 작성 화면 (다음에 제작)"
-          onBack={() => setStage("interview")}
+          message="갤러리 워크 (다음에 제작)"
+          onBack={() => setStage("reportComplete")}
         />
       )}
 
