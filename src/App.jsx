@@ -2521,7 +2521,7 @@ function Stage9Report({ name, conflict, persona, transcript, onComplete, onBack 
             marginTop: 32,
             padding: "20px 22px",
             background: allFilled ? "rgba(212,175,55,0.08)" : "rgba(244,234,213,0.03)",
-            border: \`1px solid \${allFilled ? "#d4af37" : "rgba(244,234,213,0.12)"}\`,
+            border: `1px solid ${allFilled ? "#d4af37" : "rgba(244,234,213,0.12)"}`,
             borderRadius: 2,
           }}>
             <div style={{
@@ -2635,7 +2635,7 @@ function ReportArticle({ no, mandate, value, onChange, count, minLength }) {
         style={{
           width: "100%",
           background: "rgba(244,234,213,0.04)",
-          border: \`1px solid \${isComplete ? "rgba(212,175,55,0.4)" : "rgba(244,234,213,0.15)"}\`,
+          border: `1px solid ${isComplete ? "rgba(212,175,55,0.4)" : "rgba(244,234,213,0.15)"}`,
           borderRadius: 2,
           padding: "14px 16px",
           fontSize: 14,
